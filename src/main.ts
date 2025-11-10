@@ -1,6 +1,6 @@
 import { bootstrapApplication } from '@angular/platform-browser';
-import { appConfig } from './app/app.config';
 import { AppComponent } from './app/app.component';
+import { appConfig } from './app/app.config'; // 1. Import appConfig
 
-bootstrapApplication(AppComponent, appConfig)
+bootstrapApplication(AppComponent, appConfig) // 2. Use appConfig here
   .catch((err) => console.error(err));

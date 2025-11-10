@@ -1,0 +1,118 @@
+<div class="upload-container">
+  <h2>Upload Documents</h2>
+  <p class="subtitle">
+    Drag & drop files or
+    <span class="browse-link" (click)="fileInput.click()">browse</span>
+  </p>
+
+  <div
+    class="drop-zone"
+    (dragover)="onDragOver($event)"
+    (dragleave)="onDragLeave($event)"
+    (drop)="onFileDrop($event)"
+    [class.is-dragover]="isDragOver"
+    (click)="fileInput.click()"
+  >
+    <input
+      type="file"
+      #fileInput
+      (change)="onFileSelected($event)"
+      multiple
+      hidden
+    />
+
+    <div class="drop-zone-content">
+      <!-- <span class="material-icons upload-icon">cloud_upload</span> -->
+       <img src="clds.png" alt="Upload" class="upload-icon">
+      <p class="drop-text">Drag & drop files here</p>
+      <p class="drop-or">or</p>
+      <button
+        type="button"
+        class="browse-btn"
+        (click)="$event.stopPropagation(); fileInput.click()"
+      >
+        Browse Files
+      </button>
+    </div>
+  </div>
+
+  <!-- File list -->
+  @if (files.length > 0) {
+    <div class="file-list">
+      <h4>Files to Upload</h4>
+      <div class="file-grid">
+        @for (file of files; track file; let i = $index) {
+          <div
+            class="file-card"
+            [style.animation-delay]="getAnimationDelay(i)"
+          >
+            <div class="file-preview" (click)="viewFile(i)">
+              @if (isImage(file.file)) {
+                <img [src]="file.preview" [alt]="file.name" />
+              } @else if (isPDF(file.file)) {
+                <span class="material-icons pdf-icon">picture_as_pdf</span>
+              } @else {
+                <span class="material-icons file-icon">description</span>
+              }
+            </div>
+            <div class="file-info">
+              <span class="file-name" [title]="file.name">{{ file.name }}</span>
+              <span class="file-size">
+                {{ (file.size / 1024 / 1024).toFixed(2) }} MB
+              </span>
+            </div>
+            <div class="file-actions">
+              <button
+                class="remove-btn"
+                (click)="removeFile(i)"
+                title="Remove file"
+              >
+                &times;
+              </button>
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+  }
+
+  <!-- Action buttons -->
+  @if (files.length > 0) {
+    <div class="action-buttons">
+      <button class="btn btn-secondary" (click)="clearFiles()">Clear All</button>
+      <button
+        class="btn btn-primary"
+        (click)="uploadFiles()"
+      >
+        Upload {{ files.length }} File{{ files.length > 1 ? 's' : '' }}
+      </button>
+    </div>
+  }
+
+  <!-- Modal for document preview -->
+  @if (previewFileIndex !== null) {
+    <div class="modal-backdrop" (click)="closePreview()"></div>
+    <div class="modal">
+      <div class="modal-content">
+        <button class="modal-close" (click)="closePreview()">&times;</button>
+
+        @if (isImage(files[previewFileIndex!].file)) {
+          <img
+            [src]="files[previewFileIndex!].preview"
+            [alt]="files[previewFileIndex!].name"
+            class="modal-img"
+          />
+        } @else if (isPDF(files[previewFileIndex!].file)) {
+          <iframe
+            [src]="files[previewFileIndex!].preview"
+            class="modal-pdf"
+          ></iframe>
+        } @else {
+          <p class="no-preview">
+            Preview not available for this file type.
+          </p>
+        }
+      </div>
+    </div>
+  }
+</div>
